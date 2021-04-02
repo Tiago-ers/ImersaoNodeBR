@@ -12,12 +12,21 @@ const MOCK_HEROI_DEFAULT = {
   poder: "encolher",
 };
 
+const MOCK_HEROI_ATUALIZAR = {
+  nome: `Patolino - ${Date.now()}`,
+  poder: "fala de mas",
+};
+
+let MOCK_RESULT_ID = "";
+
 const context = new Context(new MongoDB());
 
 describe("MongoDB Siute de testes", function () {
   this.beforeAll(async () => {
     await context.connect();
     await context.create(MOCK_HEROI_DEFAULT);
+    const result = await context.create(MOCK_HEROI_ATUALIZAR);
+    MOCK_RESULT_ID = result._id;
   });
 
   it("Verificar conexão", async () => {
@@ -40,5 +49,14 @@ describe("MongoDB Siute de testes", function () {
     const result = { nome, poder };
 
     assert.deepStrictEqual(result, MOCK_HEROI_DEFAULT);
+  });
+
+  it("atualizar", async () => {
+    // console.log("ID", MOCK_RESULT_ID);
+    const result = await context.update(MOCK_RESULT_ID, {
+      nome: "Pernalonga",
+    });
+
+    assert.deepStrictEqual(result.nModified, 1);
   });
 });
